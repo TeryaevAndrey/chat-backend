@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 const UserSchema = require("../models/User");
-const bcrypt = require("bcrpyt");
+const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 const Router = require("express");
