@@ -1,13 +1,16 @@
 const express = require("express");
+const config = require("config");
 const mongoose = require("mongoose");
 
 const app = express();
+
+const mongoUrl = config.get("mongoUrl");
 
 app.use("/api/auth", require("./routes/auth.route"));
 
 const startServer = async () => {
   try {
-    await mongoose.connect("mongodb+srv://admin:1479314ade777@chat.h9htg4s.mongodb.net/?retryWrites=true&w=majority");
+    await mongoose.connect(mongoUrl);
 
     app.listen(6000, () => {
       console.log("server started");
