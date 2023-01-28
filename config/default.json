@@ -1,4 +1,4 @@
 {
-    "secretKey": "1479314ade777",
-    "mongoUrl": "mongodb+srv://admin:1479314ade777@chat.h9htg4s.mongodb.net/?retryWrites=true&w=majority"
+  "secretKey": "1479314ade777",
+  "mongoUrl": "mongodb+srv://admin:1479314ade777@chat.h9htg4s.mongodb.net/?retryWrites=true&w=majority"
 }

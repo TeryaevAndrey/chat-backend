@@ -21,7 +21,11 @@ router.post("/reg", async (req: Request, res: Response) => {
 
     const hashedPassword = await bcrypt.hash(password, 12);
 
-    const user = new UserSchema({ name, password: hashedPassword });
+    const user = new UserSchema({
+      name,
+      password: hashedPassword,
+      isOnline: true,
+    });
 
     await user.save();
 
@@ -52,6 +56,8 @@ router.post("/entrance", async (req: Request, res: Response) => {
     const token = jwt.sign({ userId: user.id }, secretKey, {
       expiresIn: "1d",
     });
+
+    await user.updateOne({ $set: { isOnline: true } });
 
     return res.json({
       message: "Успешно",

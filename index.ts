@@ -14,11 +14,11 @@ const startServer = async () => {
 
     app.listen(6000, () => {
       console.log("server started");
-    })
-  } catch(err) {
+    });
+  } catch (err) {
     console.log("Server Error", err);
     process.exit(1);
-  } 
-}
+  }
+};
 
 startServer();
