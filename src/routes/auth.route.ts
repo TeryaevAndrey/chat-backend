@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+const config = require("config");
 const UserSchema = require("../models/User");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
@@ -11,7 +12,7 @@ router.post("/reg", async (req: Request, res: Response) => {
   try {
     const { name, password } = req.body;
 
-    const candidate = UserSchema.findOne({ name });
+    const candidate = await UserSchema.findOne({ name });
 
     if (candidate) {
       return res
@@ -21,13 +22,15 @@ router.post("/reg", async (req: Request, res: Response) => {
 
     const hashedPassword = await bcrypt.hash(password, 12);
 
-    const user = new UserSchema({
+    const user = await new UserSchema({
       name,
       password: hashedPassword,
       isOnline: true,
     });
 
     await user.save();
+
+    req.userId = await user._id;
 
     return res.status(201).json({ message: "Пользователь успешно создан" });
   } catch (err) {
@@ -39,7 +42,7 @@ router.post("/entrance", async (req: Request, res: Response) => {
   try {
     const { name, password } = req.body;
 
-    const user = UserSchema.findOne({ name });
+    const user = await UserSchema.findOne({ name });
 
     if (!user) {
       return res.status(400).json({ message: "Пользователь не найден" });
@@ -53,11 +56,13 @@ router.post("/entrance", async (req: Request, res: Response) => {
 
     const secretKey = config.get("secreyKey");
 
-    const token = jwt.sign({ userId: user.id }, secretKey, {
+    const token = await jwt.sign({ userId: user.id }, secretKey, {
       expiresIn: "1d",
     });
 
     await user.updateOne({ $set: { isOnline: true } });
+
+    req.userId = await user._id;
 
     return res.json({
       message: "Успешно",
