@@ -5,11 +5,11 @@ const DialogSchema = require("../models/Dialog");
 
 const router = Router();
 
-router.post("/dialog", async(req: Request, res: Response) => {
+router.post("/new-dialog", async(req: Request, res: Response) => {
   try {
-    const {comrades} = req.body;
-    const userId = req.userId;
-    const lastMessage = req.lastMessage;
+    const {comrades}: {comrades: string} = req.body;
+    const userId: string = req.userId;
+    const lastMessage: string = req.lastMessage;
   
     const dialog = await new DialogSchema({
       participants: [userId, comrades],
@@ -18,8 +18,11 @@ router.post("/dialog", async(req: Request, res: Response) => {
   
     await dialog.save();
 
+
     return res.json({message: "Диалог создан успешно!"});
   } catch(err) {
     return res.status(500).json({message: "Ошибка сервера"});
   }
 });
+
+module.exports = router;
