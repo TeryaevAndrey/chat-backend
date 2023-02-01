@@ -13,9 +13,9 @@ router.get("/users-search", async (req: Request, res: Response) => {
 
     const total = await User.countDocuments();
 
-    res.json({ message: "Пользователи, которых мы нашли", user, total });
+    return res.json({ message: "Пользователи, которых мы нашли", user, total });
   } catch (err) {
-    res.status(500).json({ message: "Ошибка сервера" });
+    return res.status(500).json({ message: "Ошибка сервера" });
   }
 });
 
@@ -23,13 +23,17 @@ router.get("/all-users", async (req: Request, res: Response) => {
   try {
     const limit: number = Number(req.query.limit);
 
-    const users = await User.find().limit(limit);
-
     const total = await User.countDocuments();
 
-    res.json({ message: "Пользователи, которых мы нашли", users, total });
+    if(limit) {
+      const users = await User.find().limit(limit);
+      return res.json({ message: "Пользователи, которых мы нашли", users, total });
+    } else {
+      const users = await User.find();
+      return res.json({ message: "Пользователи, которых мы нашли", users, total });
+    }
   } catch (err) {
-    res.status(500).json({ message: "Ошибка сервера" });
+    return res.status(500).json({ message: "Ошибка сервера" });
   }
 });
 
