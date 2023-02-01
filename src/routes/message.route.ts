@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import { WebsocketRequestHandler } from "express-ws";
 
 const Router = require("express");
 const expressWs = require("express-ws");

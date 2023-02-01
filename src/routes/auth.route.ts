@@ -28,13 +28,23 @@ router.post("/reg", async (req: Request, res: Response) => {
       isOnline: true,
     });
 
+    const secretKey = config.get("secretKey");
+
+    const token = await jwt.sign({ userId: user.id }, secretKey, {
+      expiresIn: "1d",
+    });
+
     await user.save();
 
     req.userId = await user._id;
 
-    return res.status(201).json({ message: "Пользователь успешно создан" });
+    return res.status(201).json({ message: "Пользователь успешно создан", userInfo: {
+      userId: user._id,
+      token,
+      name
+    } });
   } catch (err) {
-    return res.status(500).json({ message: "Ошибка сервера" });
+    return res.status(500).json({ message: "Ошибка сервера", err: err.message });
   }
 });
 
@@ -54,7 +64,7 @@ router.post("/entrance", async (req: Request, res: Response) => {
       return res.status(400).json({ message: "Неверный пароль" });
     }
 
-    const secretKey = config.get("secreyKey");
+    const secretKey = config.get("secretKey");
 
     const token = await jwt.sign({ userId: user.id }, secretKey, {
       expiresIn: "1d",
@@ -71,7 +81,7 @@ router.post("/entrance", async (req: Request, res: Response) => {
       name: user.name,
     });
   } catch (err) {
-    return res.status(500).json({ message: "Ошибка сервера" });
+    return res.status(500).json({ message: "Ошибка сервера", err: err.message });
   }
 });
 
