@@ -7,14 +7,13 @@ const router: RouterType = Router();
 
 router.get("/users-search", async (req: Request, res: Response) => {
   try {
-    const limit: number = Number(req.query.limit);
     const searchStr: string = String(req.query.q);
 
-    const users = await User.find({ name: searchStr }).limit(limit);
+    const user = await User.findOne({ name: searchStr });
 
     const total = await User.countDocuments();
 
-    res.json({ message: "Пользователи, которых мы нашли", users, total });
+    res.json({ message: "Пользователи, которых мы нашли", user, total });
   } catch (err) {
     res.status(500).json({ message: "Ошибка сервера" });
   }
