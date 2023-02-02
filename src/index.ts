@@ -1,3 +1,5 @@
+const checkAuth = require("./utils/checkAuth");
+
 const express = require("express");
 const http = require("http");
 const config = require("config");

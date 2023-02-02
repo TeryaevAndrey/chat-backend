@@ -36,8 +36,6 @@ router.post("/reg", async (req: Request, res: Response) => {
 
     await user.save();
 
-    req.userId = await user._id;
-
     return res.status(201).json({ message: "Пользователь успешно создан", userInfo: {
       userId: user._id,
       token,
@@ -71,8 +69,6 @@ router.post("/entrance", async (req: Request, res: Response) => {
     });
 
     await user.updateOne({ $set: { isOnline: true } });
-
-    req.userId = await user._id;
 
     return res.json({
       message: "Успешно",

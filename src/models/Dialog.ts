@@ -1,13 +1,15 @@
 import { model, Schema, SchemaDefinitionProperty, Types } from "mongoose";
 
 interface IDialogSchema {
-  participants: SchemaDefinitionProperty[] | string[];
+  mainUserId: string;
+  comradeId: string;
   lastMessage: Types.ObjectId;
 }
 
 const DialogSchema = new Schema<IDialogSchema>(
   {
-    participants: { type: Array },
+    mainUserId: {type: String, ref: "User"},
+    comradeId: {type: String, require: true},
     lastMessage: { type: Schema.Types.ObjectId, ref: "Message" },
   },
   { timestamps: true }
