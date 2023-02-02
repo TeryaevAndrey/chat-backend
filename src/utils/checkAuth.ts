@@ -16,7 +16,6 @@ module.exports = (req, res, next) => {
     const decoded = jwt.verify(token, config.get("secretKey"));
     req.userId = decoded.userId;
 
-    console.log(req.userId);
     next();
   } catch (err) {
     res.status(500).json({ message: "Нет авторизации" });
