@@ -1,4 +1,4 @@
-import { model, Schema, SchemaDefinitionProperty, Types } from "mongoose";
+import { model, Schema, Types } from "mongoose";
 
 interface IDialogSchema {
   mainUserId: string;

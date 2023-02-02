@@ -25,9 +25,19 @@ router.post("/new-dialog", checkAuth, async(req: Request, res: Response) => {
   
     await dialog.save();
 
-    return res.json({message: "Диалог создан успешно!"});
+    return res.json({message: "Диалог создан успешно!", dialogId: dialog._id});
   } catch(err) {
     return res.status(500).json({message: "Ошибка сервера"});
+  }
+});
+
+router.get("/my-dialogs", checkAuth, async(req: Request, res: Response) => {
+  try {
+    const dialogs = await DialogSchema.find({mainUserId: req.userId});
+
+    return res.json({dialogs});
+  } catch(err) {
+    return res.status(500).json({message: "Ошибка сервера", err: err.message});
   }
 });
 
