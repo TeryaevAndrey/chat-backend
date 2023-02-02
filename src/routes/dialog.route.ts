@@ -15,7 +15,7 @@ router.post("/new-dialog", checkAuth, async(req: Request, res: Response) => {
     const candidate = await DialogSchema.findOne({mainUserId: req.userId || comradeId, comradeId: comradeId || req.userId});
 
     if(candidate) {
-      return res.status(500).json({message: "Такой диалог уже существует"});
+      return res.json({message: "Такой диалог уже существует", dialogId: candidate._id});
     }
 
     const user = await UserSchema.findOne({_id: req.userId});
