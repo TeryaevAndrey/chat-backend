@@ -15,8 +15,8 @@ router
     })
 
     ws.on("message", (msg) => {
-      expressWss.getWss().clients.forEach(client => {
-        client.send(msg);
+      expressWss.getWss("/new-message").clients.forEach(client => {
+          client.send(msg);
       });
     });
   })
