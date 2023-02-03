@@ -7,7 +7,7 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 
 const app = express();
-const expressWs = require('express-ws')(app);
+export const expressWss = require('express-ws')(app);
 
 const mongoUrl: string = config.get("mongoUrl");
 

@@ -3,6 +3,7 @@ import { Request, Response } from "express";
 const Router = require("express");
 const expressWs = require("express-ws");
 const MessageSchema = require("../models/Message");
+import {expressWss} from "../index";
 
 const router = Router();
 expressWs(router);
@@ -14,8 +15,9 @@ router
     })
 
     ws.on("message", (msg) => {
-      console.log(msg);
-      ws.send(msg);
+      expressWss.getWss().clients.forEach(client => {
+        client.send(msg);
+      });
     });
   })
   .post("/new-message", async (req: Request, res: Response) => {
