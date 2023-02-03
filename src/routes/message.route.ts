@@ -9,7 +9,12 @@ expressWs(router);
 
 router
   .ws("/new-message", (ws, req: Request) => {
+    ws.on("connection", () => {
+      console.log("Подключено");
+    })
+
     ws.on("message", (msg) => {
+      console.log(msg);
       ws.send(msg);
     });
   })
