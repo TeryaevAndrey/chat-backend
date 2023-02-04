@@ -9,7 +9,7 @@ const router = Router();
 expressWs(router);
 
 router
-  .ws("/new-message", (ws, req: Request) => {
+  .ws("/new-message/:id", (ws, req: Request) => {
     ws.on("connection", () => {
       console.log("Подключено");
     })
