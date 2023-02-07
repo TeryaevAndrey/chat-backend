@@ -12,4 +12,4 @@ const MessageSchema = new Schema<IMessageSchema>({
   sender: { type: Schema.Types.ObjectId, require: true, ref: "User" },
 });
 
-module.exports = model("Message", MessageSchema);
+export default model("Message", MessageSchema);

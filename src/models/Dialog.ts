@@ -10,13 +10,13 @@ interface IDialogSchema {
 
 const DialogSchema = new Schema<IDialogSchema>(
   {
-    mainUserId: {type: String, ref: "User"},
-    comradeId: {type: String, require: true},
-    mainUserName: {type: String, require: true},
-    comradeName: {type: String, require: true},
+    mainUserId: { type: String, ref: "User" },
+    comradeId: { type: String, require: true },
+    mainUserName: { type: String, require: true },
+    comradeName: { type: String, require: true },
     lastMessage: { type: Schema.Types.ObjectId, ref: "Message" },
   },
   { timestamps: true }
 );
 
-module.exports = model("Dialog", DialogSchema);
+export default model("Dialog", DialogSchema);

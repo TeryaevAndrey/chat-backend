@@ -1,4 +1,4 @@
-module.exports = (req, res, next) => {
+const checkAuth = (req, res, next) => {
   const jwt = require("jsonwebtoken");
   const config = require("config");
 
@@ -21,3 +21,5 @@ module.exports = (req, res, next) => {
     res.status(500).json({ message: "Нет авторизации" });
   }
 };
+
+export default checkAuth;
