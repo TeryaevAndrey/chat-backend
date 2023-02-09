@@ -3,6 +3,8 @@ import config from "config";
 import mongoose from "mongoose";
 import cors from "cors";
 import createRoutes from "./core/routes";
+import createSocket from "./core/socket";
+import { createServer } from "http";
 
 const app = express();
 
@@ -15,7 +17,10 @@ app.use(
   })
 );
 
-createRoutes(app);
+const http = createServer(app);
+const io = createSocket(http);
+
+createRoutes(app, io);
 
 const startServer = async () => {
   try {

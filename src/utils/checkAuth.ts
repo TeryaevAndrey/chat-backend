@@ -1,4 +1,6 @@
-const checkAuth = (req, res, next) => {
+import { NextFunction, Request, Response } from "express";
+
+const checkAuth = (req: Request, res: Response, next: NextFunction) => {
   const jwt = require("jsonwebtoken");
   const config = require("config");
 
@@ -7,16 +9,18 @@ const checkAuth = (req, res, next) => {
   }
 
   try {
-    const token = req.headers.authorization.split(" ")[1];
+    if (req.headers.authorization) {
+      const token = req.headers.authorization.split(" ")[1];
 
-    if (!token) {
-      return res.status(401).json({ message: "Нет авторизации" });
+      if (!token) {
+        return res.status(401).json({ message: "Нет авторизации" });
+      }
+
+      const decoded = jwt.verify(token, config.get("secretKey"));
+      req.userId = decoded.userId;
+
+      next();
     }
-
-    const decoded = jwt.verify(token, config.get("secretKey"));
-    req.userId = decoded.userId;
-
-    next();
   } catch (err) {
     res.status(500).json({ message: "Нет авторизации" });
   }
