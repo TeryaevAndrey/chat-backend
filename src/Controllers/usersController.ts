@@ -16,11 +16,9 @@ class UsersController {
       const users = await UsersModel.find({ userName: userName });
 
       if (!users) {
-        return res
-          .status(404)
-          .json({
-            message: "Нам не удалось найти пользователей с данным именем",
-          });
+        return res.status(404).json({
+          message: "Нам не удалось найти пользователей с данным именем",
+        });
       }
 
       return res.json({ message: "Вот кого нам удалось найти", users });

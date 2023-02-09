@@ -1,65 +1,68 @@
 import { Request, Response } from "express";
-import DialogSchema from "../models/DialogModel";
-import UserSchema from "../models/UserModel";
+import socket from "socket.io";
+import DialogModel from "../models/DialogModel";
 
-const dialogController = () => {
-  const newDialog = async (req: Request, res: Response) => {
+interface IDialog {
+  creator: string;
+  fellow: string;
+  creatorName: string;
+  fellowName: string;
+  lastMessage: string;
+}
+
+class DialogController {
+  io?: socket.Server;
+
+  constructor(io?: socket.Server) {
+    this.io = io;
+  }
+
+  newDialog = async (req: Request, res: Response) => {
     try {
-      const {
-        comradeId,
-        comradeName,
-      }: { comradeId: string; comradeName: string } = req.body;
-      const lastMessage: string | undefined = req.lastMessage;
+      const { creator, fellow, creatorName, fellowName, lastMessage }: IDialog =
+        req.body;
 
-      const candidate = await DialogSchema.findOne({
-        $or: [{ comradeId: req.userId }, { comradeId: comradeId }],
+      const candidate = await DialogModel.findOne({
+        $or: [{ creator }, { creator: fellow }],
       });
-
-      //{mainUserId: req.userId || comradeId, comradeId: req.userId || comradeId}
 
       if (candidate) {
         return res.json({
-          message: "Такой диалог уже существует",
+          message: "Диалог уже существует",
           dialogId: candidate._id,
         });
       }
 
-      const user = await UserSchema.findOne({ _id: req.userId });
-
-      if (user) {
-        const dialog = await new DialogSchema({
-          mainUserId: req.userId,
-          comradeId,
-          mainUserName: user.name,
-          comradeName: comradeName,
-          lastMessage,
-        });
-
-        await dialog.save();
-
-        return res.json({
-          message: "Диалог создан успешно!",
-          dialogId: dialog._id,
-        });
-      }
-    } catch (err) {
-      return res.status(500).json({ message: "Ошибка сервера" });
-    }
-  };
-
-  const myDialogs = async (req: Request, res: Response) => {
-    try {
-      const dialogs = await DialogSchema.find({
-        $or: [{ mainUserId: req.userId }, { comradeId: req.userId }],
+      const dialog = new DialogModel({
+        creator,
+        fellow,
+        creatorName,
+        fellowName,
+        lastMessage,
       });
 
-      return res.json({ dialogs });
+      await dialog.save();
+
+      return res.json({
+        message: "Диалог создан успешно!",
+        dialogId: dialog._id,
+      });
     } catch (err) {
       return res.status(500).json({ message: "Ошибка сервера" });
     }
   };
 
-  return { newDialog, myDialogs };
-};
+  getMyDialogs = async (req: Request, res: Response) => {
+    try {
+      const dialogs = await DialogModel.find({
+        $or: [{ creator: req.userId }, { fellow: req.userId }],
+      });
 
-export default dialogController;
+      return res.json({ message: "Мы нашли ваши диалоги", dialogs });
+    } catch (err) {
+      return res.status(500).json({ message: "Ошибка сервера" });
+    }
+  };
+}
+
+export default DialogController;

@@ -11,7 +11,7 @@ const MessageSchema = new Schema<IMessageSchema>(
   {
     message: { type: String, required: true },
     dialog: { type: String, required: true },
-    files: {type: Array },
+    files: { type: Array },
     sender: { type: String, required: true },
   },
   { timestamps: true }
