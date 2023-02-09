@@ -3,7 +3,7 @@ import { Request, Response } from "express";
 import socket from "socket.io";
 import jwt from "jsonwebtoken";
 import config from "config";
-import UserSchema from "../models/UserModel";
+import UserModel from "../models/UserModel";
 
 interface IData {
   userName: string;
@@ -21,7 +21,7 @@ class AuthController {
     try {
       const { userName, password }: IData = req.body;
 
-      const candidate = await UserSchema.findOne({ userName });
+      const candidate = await UserModel.findOne({ userName });
 
       if (candidate) {
         return res
@@ -31,7 +31,7 @@ class AuthController {
 
       const hashedPassword = await bcrypt.hash(password, 12);
 
-      const user = new UserSchema({
+      const user = new UserModel({
         avatar: "",
         userName: userName,
         password: hashedPassword,
@@ -62,7 +62,7 @@ class AuthController {
     try {
       const { userName, password }: IData = req.body;
 
-      const user = await UserSchema.findOne({ userName });
+      const user = await UserModel.findOne({ userName });
 
       if (!user) {
         return res.status(400).json({ message: "Пользователь не найден" });
