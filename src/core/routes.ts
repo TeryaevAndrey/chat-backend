@@ -3,6 +3,7 @@ import AuthCtrl from "../controllers/AuthController";
 import UsersCtrl from "../controllers/UsersController";
 import DialogsCtrl from "../controllers/DialogsController";
 import MessagesCtrl from "../controllers/MessagesController";
+import checkAuth from "../utils/checkAuth";
 
 const createRoutes = (app: Express) => {
   const AuthController = new AuthCtrl();
@@ -14,10 +15,22 @@ const createRoutes = (app: Express) => {
   app.post("/api/auth/entrance", AuthController.entrance);
   app.post("/api/users/users-search", UsersController.usersSearch);
   app.get("/api/users/get-all-users", UsersController.getAllUsers);
-  app.post("/api/dialogs/new-dialog", DialogsController.newDialog);
-  app.get("/api/dialogs/get-my-dialogs", DialogsController.getMyDialogs);
-  app.post("/api/messages/new-message", MessagesController.newMessage,); 
-  app.get("/api/messages/get-messages/:dialogId", MessagesController.getMessages);
+  app.post("/api/dialogs/new-dialog", checkAuth, DialogsController.newDialog);
+  app.get(
+    "/api/dialogs/get-my-dialogs",
+    checkAuth,
+    DialogsController.getMyDialogs
+  );
+  app.post(
+    "/api/messages/new-message",
+    checkAuth,
+    MessagesController.newMessage
+  );
+  app.get(
+    "/api/messages/get-messages/:dialogId",
+    checkAuth,
+    MessagesController.getMessages
+  );
 };
 
 export default createRoutes;
