@@ -1,15 +1,16 @@
 import { Express } from "express";
+import socket from "socket.io";
 import AuthCtrl from "../controllers/AuthController";
 import UsersCtrl from "../controllers/UsersController";
 import DialogsCtrl from "../controllers/DialogsController";
 import MessagesCtrl from "../controllers/MessagesController";
 import checkAuth from "../utils/checkAuth";
 
-const createRoutes = (app: Express) => {
-  const AuthController = new AuthCtrl();
-  const UsersController = new UsersCtrl();
-  const DialogsController = new DialogsCtrl();
-  const MessagesController = new MessagesCtrl();
+const createRoutes = (app: Express, io: socket.Server) => {
+  const AuthController = new AuthCtrl(io);
+  const UsersController = new UsersCtrl(io);
+  const DialogsController = new DialogsCtrl(io);
+  const MessagesController = new MessagesCtrl(io);
 
   app.post("/api/auth/reg", AuthController.reg);
   app.post("/api/auth/entrance", AuthController.entrance);
