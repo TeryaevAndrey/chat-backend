@@ -13,7 +13,7 @@ const messageController = () => {
       } = req.body;
       const senderId: string = req.userId;
 
-      const message = await new MessageSchema({
+      const message = new MessageSchema({
         message: messageText,
         dialog,
         sender: senderId,

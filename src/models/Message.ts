@@ -2,14 +2,17 @@ import { model, Schema, Types } from "mongoose";
 
 interface IMessageSchema {
   message: string;
-  dialog: Types.ObjectId;
-  sender: Types.ObjectId | string;
+  dialog: string;
+  sender: string;
 }
 
-const MessageSchema = new Schema<IMessageSchema>({
-  message: { type: String, require: true },
-  dialog: { type: Schema.Types.ObjectId, require: true, ref: "Dialog" },
-  sender: { type: Schema.Types.ObjectId, require: true, ref: "User" },
-});
+const MessageSchema = new Schema<IMessageSchema>(
+  {
+    message: { type: String, required: true },
+    dialog: { type: String, required: true },
+    sender: { type: String, required: true },
+  },
+  { timestamps: true }
+);
 
 export default model("Message", MessageSchema);

@@ -1,16 +1,18 @@
 import { model, Schema } from "mongoose";
 
 interface IUserSchema {
-  name: string;
-  password: string;
+  avatar?: string;
+  userName: string;
   isOnline: boolean;
+  wasOnline?: string;
 }
 
 const UserSchema = new Schema<IUserSchema>(
   {
-    name: { type: String, require: true, unique: true },
-    password: { type: String, require: true },
-    isOnline: { type: Boolean },
+    avatar: {type: String}, 
+    userName: {type: String, required: true}, 
+    isOnline: {type: Boolean, required: true}, 
+    wasOnline: {type: String}
   },
   { timestamps: true }
 );
