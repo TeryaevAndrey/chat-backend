@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import User from "../models/User";
+import User from "../models/UserModel";
 
 const usersController = () => {
   const searchUsers = async (req: Request, res: Response) => {

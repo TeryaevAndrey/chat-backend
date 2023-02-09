@@ -1,15 +1,27 @@
-import { Request, Response } from "express";
-import UserSchema from "../models/User";
 import bcrypt from "bcrypt";
+import { Request, Response } from "express";
+import socket from "socket.io";
 import jwt from "jsonwebtoken";
 import config from "config";
+import UserSchema from "../models/UserModel";
 
-const authController = () => {
-  const reg = async (req: Request, res: Response) => {
+interface IData {
+  userName: string;
+  password: string;
+}
+
+class AuthController {
+  io?: socket.Server;
+
+  constructor(io?: socket.Server) {
+    this.io = io;
+  }
+
+  reg = async (req: Request, res: Response) => {
     try {
-      const { name, password } = req.body;
+      const { userName, password }: IData = req.body;
 
-      const candidate = await UserSchema.findOne({ name });
+      const candidate = await UserSchema.findOne({ userName });
 
       if (candidate) {
         return res
@@ -20,23 +32,25 @@ const authController = () => {
       const hashedPassword = await bcrypt.hash(password, 12);
 
       const user = new UserSchema({
-        name,
+        avatar: "",
+        userName: userName,
         password: hashedPassword,
         isOnline: true,
+        wasOnline: "",
       });
 
-      const token = jwt.sign({ userId: user.id }, config.get("secretKey"), {
+      const token = jwt.sign({ userId: user._id }, config.get("secretKey"), {
         expiresIn: "1d",
       });
 
       await user.save();
 
       return res.status(201).json({
-        message: "Пользователь успешно создан",
+        message: "Пользователь создан успешно",
         userInfo: {
           userId: user._id,
           token,
-          name,
+          userName,
         },
       });
     } catch (err) {
@@ -44,11 +58,11 @@ const authController = () => {
     }
   };
 
-  const entrance = async (req: Request, res: Response) => {
+  entrance = async (req: Request, res: Response) => {
     try {
-      const { name, password } = req.body;
+      const { userName, password }: IData = req.body;
 
-      const user = await UserSchema.findOne({ name });
+      const user = await UserSchema.findOne({ userName });
 
       if (!user) {
         return res.status(400).json({ message: "Пользователь не найден" });
@@ -60,24 +74,22 @@ const authController = () => {
         return res.status(400).json({ message: "Неверный пароль" });
       }
 
-      const token = jwt.sign({ userId: user.id }, config.get("secretKey"), {
+      const token = jwt.sign({ userId: user._id }, config.get("secretKey"), {
         expiresIn: "1d",
       });
 
       await user.updateOne({ $set: { isOnline: true } });
 
       return res.json({
-        message: "Успешно",
+        message: "Вход выполнен успешно",
+        userId: user._id,
         token,
-        userId: user.id,
-        name: user.name,
+        userName: userName,
       });
     } catch (err) {
       return res.status(500).json({ message: "Ошибка сервера" });
     }
   };
+}
 
-  return { reg, entrance };
-};
-
-export default authController;
+export default AuthController;

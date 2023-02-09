@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import MessageSchema from "../models/Message";
+import MessageSchema from "../models/MessageModel";
 
 const messageController = () => {
   const newMessage = async (req: Request, res: Response) => {

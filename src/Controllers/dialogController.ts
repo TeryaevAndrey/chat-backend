@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import DialogSchema from "../models/Dialog";
-import UserSchema from "../models/User";
+import DialogSchema from "../models/DialogModel";
+import UserSchema from "../models/UserModel";
 
 const dialogController = () => {
   const newDialog = async (req: Request, res: Response) => {
