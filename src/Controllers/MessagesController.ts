@@ -10,9 +10,9 @@ interface IMessage {
 }
 
 class MessagesController {
-  io?: socket.Server;
+  io: socket.Server;
 
-  constructor(io?: socket.Server) {
+  constructor(io: socket.Server) {
     this.io = io;
   }
 
@@ -28,6 +28,8 @@ class MessagesController {
       });
 
       await newMessage.save();
+
+      this.io.emit("SERVER:NEW-MESSAGE", newMessage);
 
       return res.json({ message: "Сообщение отправлено" });
     } catch (err) {
