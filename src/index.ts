@@ -1,7 +1,6 @@
 import express from "express";
 import config from "config";
 import mongoose from "mongoose";
-import cors from "cors";
 import createRoutes from "./core/routes";
 import createSocket from "./core/socket";
 import { createServer } from "http";
@@ -9,13 +8,6 @@ import { createServer } from "http";
 const app = express();
 
 const mongoUrl: string = config.get("mongoUrl");
-
-app.use(express.json());
-app.use(
-  cors({
-    origin: config.get("ALLOWED_ORIGIN"),
-  })
-);
 
 const http = createServer(app);
 const io = createSocket(http);
