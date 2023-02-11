@@ -5,6 +5,8 @@ import DialogModel from "../models/DialogModel";
 interface IDialog {
   creator: string;
   fellow: string;
+  creatorAvatar: string;
+  fellowAvatar: string;
   creatorName: string;
   fellowName: string;
   lastMessage: string;
@@ -19,7 +21,7 @@ class DialogController {
 
   newDialog = async (req: Request, res: Response) => {
     try {
-      const { creator, fellow, creatorName, fellowName, lastMessage }: IDialog =
+      const { creator, fellow, creatorAvatar, fellowAvatar, creatorName, fellowName, lastMessage }: IDialog =
         req.body;
 
       const candidate = await DialogModel.findOne({
@@ -36,6 +38,8 @@ class DialogController {
       const dialog = new DialogModel({
         creator,
         fellow,
+        creatorAvatar,
+        fellowAvatar,
         creatorName,
         fellowName,
         lastMessage,
@@ -57,6 +61,10 @@ class DialogController {
       const dialogs = await DialogModel.find({
         $or: [{ creator: req.userId }, { fellow: req.userId }],
       });
+
+      if(dialogs.length === 0) {
+        return res.status(404).json({message: "У Вас нет переписок"});
+      }
 
       return res.json({ message: "Мы нашли ваши диалоги", dialogs });
     } catch (err) {

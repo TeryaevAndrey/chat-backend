@@ -1,4 +1,5 @@
-import { Express } from "express";
+import express, { Express } from "express";
+import cors from "cors";
 import socket from "socket.io";
 import AuthCtrl from "../controllers/AuthController";
 import UsersCtrl from "../controllers/UsersController";
@@ -11,6 +12,11 @@ const createRoutes = (app: Express, io: socket.Server) => {
   const UsersController = new UsersCtrl(io);
   const DialogsController = new DialogsCtrl(io);
   const MessagesController = new MessagesCtrl(io);
+
+  app.use(express.json());
+  app.use(
+    cors()
+  );
 
   app.post("/api/auth/reg", AuthController.reg);
   app.post("/api/auth/entrance", AuthController.entrance);

@@ -22,11 +22,15 @@ class AuthController {
       const { userName, password }: IData = req.body;
 
       const candidate = await UserModel.findOne({ userName });
-
+      
       if (candidate) {
         return res
           .status(500)
           .json({ message: "Пользователь с таким именем существует" });
+      }
+
+      if(!password) {
+        return res.status(500).json({message: "Введите пароль"});
       }
 
       const hashedPassword = await bcrypt.hash(password, 12);
@@ -39,11 +43,11 @@ class AuthController {
         wasOnline: "",
       });
 
+      await user.save();
+
       const token = jwt.sign({ userId: user._id }, config.get("secretKey"), {
         expiresIn: "1d",
       });
-
-      await user.save();
 
       return res.status(201).json({
         message: "Пользователь создан успешно",
@@ -54,7 +58,7 @@ class AuthController {
         },
       });
     } catch (err) {
-      return res.status(500).json({ message: "Ошибка сервера" });
+      return res.status(500).json({ message: "Ошибка сервера", err});
     }
   };
 
@@ -82,9 +86,11 @@ class AuthController {
 
       return res.json({
         message: "Вход выполнен успешно",
-        userId: user._id,
-        token,
-        userName: userName,
+        userInfo: {
+          userId: user._id,
+          token,
+          userName,
+        }
       });
     } catch (err) {
       return res.status(500).json({ message: "Ошибка сервера" });
