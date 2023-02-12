@@ -13,7 +13,7 @@ const dUri = new Datauri();
 // @ts-ignore
 
 const dataUri = (req) => {
-  dUri.format(path.extname(req.file.originalname).toString(), req.file.buffer);
+  return dUri.format(path.extname(req.file.originalname).toString(), req.file.buffer);
 }
 
 export {multerUploads, dataUri};

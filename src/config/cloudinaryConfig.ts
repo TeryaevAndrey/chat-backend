@@ -1,8 +1,10 @@
-import cloudinary from "cloudinary";
+// @ts-ignore
+
+import cloudinary, {uploader} from "cloudinary";
 
 // @ts-ignore
 
-export const cloudinaryConfig = (req, res, next) => {
+const cloudinaryConfig = (req, res, next) => {
   // @ts-ignore
   cloudinary.config({
     cloud_name: process.env.CLOUDINARY_NAME,
@@ -12,3 +14,5 @@ export const cloudinaryConfig = (req, res, next) => {
 
   next();
 };
+
+export {cloudinaryConfig, uploader};
