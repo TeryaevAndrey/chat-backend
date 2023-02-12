@@ -1,13 +1,13 @@
 import express from "express";
-import config from "config";
+import dotenv from "dotenv";
+
+dotenv.config();
 import mongoose from "mongoose";
 import createRoutes from "./core/routes";
 import createSocket from "./core/socket";
 import { createServer } from "http";
 
 const app = express();
-
-const mongoUrl: string = config.get("mongoUrl");
 
 const http = createServer(app);
 const io = createSocket(http);
@@ -16,9 +16,9 @@ createRoutes(app, io);
 
 const startServer = async () => {
   try {
-    await mongoose.connect(mongoUrl);
+    await mongoose.connect(process.env.MONGO_URL!);
 
-    app.listen(config.get("port"), () => {
+    app.listen(process.env.PORT, () => {
       console.log("server started");
     });
   } catch (err) {

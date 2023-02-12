@@ -14,9 +14,7 @@ const createRoutes = (app: Express, io: socket.Server) => {
   const MessagesController = new MessagesCtrl(io);
 
   app.use(express.json());
-  app.use(
-    cors()
-  );
+  app.use(cors());
 
   app.post("/api/auth/reg", AuthController.reg);
   app.post("/api/auth/entrance", AuthController.entrance);

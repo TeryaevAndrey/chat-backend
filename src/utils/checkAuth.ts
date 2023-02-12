@@ -2,7 +2,6 @@ import { NextFunction, Request, Response } from "express";
 
 const checkAuth = (req: Request, res: Response, next: NextFunction) => {
   const jwt = require("jsonwebtoken");
-  const config = require("config");
 
   if (req.method === "OPTIONS") {
     return next();
@@ -16,7 +15,7 @@ const checkAuth = (req: Request, res: Response, next: NextFunction) => {
         return res.status(401).json({ message: "Нет авторизации" });
       }
 
-      const decoded = jwt.verify(token, config.get("secretKey"));
+      const decoded = jwt.verify(token, process.env.SECRET_KEY as string);
       req.userId = decoded.userId;
 
       next();

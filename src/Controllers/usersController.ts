@@ -13,7 +13,9 @@ class UsersController {
     try {
       const { userName }: { userName: string } = req.body;
 
-      const users = await UsersModel.find({userName: {$regex: userName, $options: "i"}});
+      const users = await UsersModel.find({
+        userName: { $regex: userName, $options: "i" },
+      });
 
       if (!users) {
         return res.status(404).json({

@@ -14,7 +14,7 @@ const UserSchema = new Schema<IUserSchema>(
     userName: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     isOnline: { type: Boolean, required: true },
-    wasOnline: { type: String , required: false},
+    wasOnline: { type: String, required: false },
   },
   { timestamps: true }
 );
