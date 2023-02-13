@@ -54,45 +54,64 @@ class UsersController {
         newUserName,
         oldPassword,
         newPassword,
+        userId,
       }: {
         newUserName?: string;
         oldPassword?: string;
         newPassword?: string;
+        userId: string;
       } = req.body;
 
-      if (req.file) {
-        const resultFile = await cloudinary.v2.uploader.upload(req.file.path);
+      const file = req.file;
+
+      if (file) {
+        const resultFile = await cloudinary.v2.uploader.upload(file.path, {
+          folder: "avatars",
+        });
 
         const candidate = await UsersModel.findOne({ userName: newUserName });
 
-        if (candidate.userName === newUserName) {
+        if (candidate) {
           return res
             .status(500)
             .json({ message: "Пользователь с таким именем уже существует" });
         }
 
-        const currentUser = await UsersModel.findOne({ _id: req.userId });
+        const currentUser = await UsersModel.findOne({ _id: userId });
 
-        if (oldPassword && newPassword) {
-          const isMatch = await bcrypt.compare(
+        if (oldPassword) {
+          const oldHashedPassword = await bcrypt.compare(
             oldPassword,
             currentUser.password
           );
 
-          if (!isMatch) {
-            return res
-              .status(500)
-              .json({ message: "Старый пароль не совпадает с существующим" });
+          if (oldHashedPassword && newPassword) {
+            const hashedPassword = await bcrypt.hash(newPassword, 12);
+
+            await UsersModel.updateOne(
+              { _id: userId },
+              {
+                avatar: resultFile.secure_url,
+                userName: newUserName,
+                password: hashedPassword,
+              }
+            );
+
+            return res.status(200).json({
+              avatar: resultFile.secure_url,
+              message: "Данные обновлены",
+              userInfo: {
+                userName: newUserName,
+              },
+            });
           }
 
-          const hashedPassword = bcrypt.hash(newPassword, 12);
-
           await UsersModel.updateOne(
-            { _id: req.userId },
+            { _id: userId },
             {
               avatar: resultFile.secure_url,
-              userName: newUserName || currentUser.userName,
-              password: hashedPassword || currentUser.password,
+              userName: newUserName,
+              password: currentUser.password,
             }
           );
 
@@ -104,47 +123,89 @@ class UsersController {
             },
           });
         }
-      } else {
-        const candidate = await UsersModel.findOne({ userName: newUserName });
 
-        if (candidate.userName === newUserName) {
-          return res
-            .status(500)
-            .json({ message: "Пользователь с таким именем уже существует" });
-        }
-
-        const currentUser = await UsersModel.findOne({ _id: req.userId });
-
-        if (oldPassword && newPassword) {
-          const isMatch = await bcrypt.compare(
-            oldPassword,
-            currentUser.password
-          );
-
-          if (!isMatch) {
-            return res
-              .status(500)
-              .json({ message: "Старый пароль не совпадает с существующим" });
+        await UsersModel.updateOne(
+          { _id: userId },
+          {
+            avatar: resultFile.secure_url,
+            userName: newUserName,
+            password: currentUser.password,
           }
+        );
 
-          const hashedPassword = bcrypt.hash(newPassword, 12);
-
-          await UsersModel.updateOne(
-            { _id: req.userId },
-            {
-              userName: newUserName || currentUser.userName,
-              password: hashedPassword || currentUser.password,
-            }
-          );
-
-          return res.status(200).json({
-            message: "Данные обновлены",
-            userInfo: {
-              userName: newUserName,
-            },
-          });
-        }
+        return res.status(200).json({
+          message: "Данные обновлены",
+          userInfo: {
+            avatar: resultFile.secure_url,
+            userName: newUserName,
+          },
+        });
       }
+
+      const candidate = await UsersModel.findOne({ userName: newUserName });
+
+      if (candidate) {
+        return res
+          .status(500)
+          .json({ message: "Пользователь с таким именем уже существует" });
+      }
+
+      const currentUser = await UsersModel.findOne({ _id: userId });
+
+      if (oldPassword) {
+        const oldHashedPassword = await bcrypt.compare(
+          oldPassword,
+          currentUser.password
+        );
+
+        if (oldHashedPassword && newPassword) {
+          const hashedPassword = await bcrypt.hash(newPassword, 12);
+
+          await UsersModel.updateOne(
+            { _id: userId },
+            {
+              userName: newUserName,
+              password: hashedPassword,
+            }
+          );
+
+          return res.status(200).json({
+            message: "Данные обновлены",
+            userInfo: {
+              userName: newUserName,
+            },
+          });
+        }
+
+        await UsersModel.updateOne(
+          { _id: userId },
+          {
+            userName: newUserName,
+            password: currentUser.password,
+          }
+        );
+
+        return res.status(200).json({
+          message: "Данные обновлены",
+          userInfo: {
+            userName: newUserName,
+          },
+        });
+      }
+
+      await UsersModel.updateOne(
+        { _id: userId },
+        {
+          userName: newUserName,
+        }
+      );
+
+      return res.status(200).json({
+        message: "Данные обновлены",
+        userInfo: {
+          userName: newUserName,
+        },
+      });
     } catch (err) {
       return res.status(500).json({ message: "Ошибка сервера" });
     }
