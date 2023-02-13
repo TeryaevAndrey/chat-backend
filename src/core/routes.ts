@@ -6,7 +6,6 @@ import UsersCtrl from "../controllers/UsersController";
 import DialogsCtrl from "../controllers/DialogsController";
 import MessagesCtrl from "../controllers/MessagesController";
 import checkAuth from "../utils/checkAuth";
-import { cloudinaryConfig } from "../config/cloudinaryConfig";
 
 const createRoutes = (app: Express, io: socket.Server) => {
   const AuthController = new AuthCtrl(io);
@@ -16,7 +15,6 @@ const createRoutes = (app: Express, io: socket.Server) => {
 
   app.use(urlencoded({extended: false}));
   app.use(express.json());
-  app.use("*", cloudinaryConfig);
   app.use(cors());
 
   app.post("/api/auth/reg", AuthController.reg);
