@@ -6,6 +6,7 @@ import UsersCtrl from "../controllers/UsersController";
 import DialogsCtrl from "../controllers/DialogsController";
 import MessagesCtrl from "../controllers/MessagesController";
 import checkAuth from "../utils/checkAuth";
+import { multerUploads } from "../utils/multer";
 
 const createRoutes = (app: Express, io: socket.Server) => {
   const AuthController = new AuthCtrl(io);
@@ -37,6 +38,8 @@ const createRoutes = (app: Express, io: socket.Server) => {
     checkAuth,
     MessagesController.getMessages
   );
+
+  app.post("/api/users/update-data", multerUploads.single("avatar"), UsersController.updateDataUser);
 };
 
 export default createRoutes;
