@@ -1,4 +1,4 @@
-import express, { Express } from "express";
+import express, { Express, urlencoded } from "express";
 import cors from "cors";
 import socket from "socket.io";
 import AuthCtrl from "../controllers/AuthController";
@@ -6,6 +6,7 @@ import UsersCtrl from "../controllers/UsersController";
 import DialogsCtrl from "../controllers/DialogsController";
 import MessagesCtrl from "../controllers/MessagesController";
 import checkAuth from "../utils/checkAuth";
+import { multerUploads } from "../utils/multer";
 
 const createRoutes = (app: Express, io: socket.Server) => {
   const AuthController = new AuthCtrl(io);
@@ -13,10 +14,9 @@ const createRoutes = (app: Express, io: socket.Server) => {
   const DialogsController = new DialogsCtrl(io);
   const MessagesController = new MessagesCtrl(io);
 
+  app.use(urlencoded({extended: false}));
   app.use(express.json());
-  app.use(
-    cors()
-  );
+  app.use(cors());
 
   app.post("/api/auth/reg", AuthController.reg);
   app.post("/api/auth/entrance", AuthController.entrance);
@@ -38,6 +38,8 @@ const createRoutes = (app: Express, io: socket.Server) => {
     checkAuth,
     MessagesController.getMessages
   );
+
+  app.post("/api/users/update-data", multerUploads.single("avatar"), UsersController.updateDataUser);
 };
 
 export default createRoutes;

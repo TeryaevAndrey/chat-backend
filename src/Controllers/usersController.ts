@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import socket from "socket.io";
 import UsersModel from "../models/UserModel";
+import { cloudinary } from "../utils/cloudinary";
+import bcrypt from "bcrypt";
 
 class UsersController {
   io?: socket.Server;
@@ -13,7 +15,9 @@ class UsersController {
     try {
       const { userName }: { userName: string } = req.body;
 
-      const users = await UsersModel.find({userName: {$regex: userName, $options: "i"}});
+      const users = await UsersModel.find({
+        userName: { $regex: userName, $options: "i" },
+      });
 
       if (!users) {
         return res.status(404).json({
@@ -39,6 +43,169 @@ class UsersController {
       const total = await UsersModel.countDocuments();
 
       return res.json({ message: "Все пользователи", users, total });
+    } catch (err) {
+      return res.status(500).json({ message: "Ошибка сервера" });
+    }
+  };
+
+  updateDataUser = async (req: Request, res: Response) => {
+    try {
+      const {
+        newUserName,
+        oldPassword,
+        newPassword,
+        userId,
+      }: {
+        newUserName?: string;
+        oldPassword?: string;
+        newPassword?: string;
+        userId: string;
+      } = req.body;
+
+      const file = req.file;
+
+      if (file) {
+        const resultFile = await cloudinary.v2.uploader.upload(file.path, {
+          folder: "avatars",
+        });
+
+        const candidate = await UsersModel.findOne({ userName: newUserName });
+
+        if (candidate) {
+          return res
+            .status(500)
+            .json({ message: "Пользователь с таким именем уже существует" });
+        }
+
+        const currentUser = await UsersModel.findOne({ _id: userId });
+
+        if (oldPassword) {
+          const oldHashedPassword = await bcrypt.compare(
+            oldPassword,
+            currentUser.password
+          );
+
+          if (oldHashedPassword && newPassword) {
+            const hashedPassword = await bcrypt.hash(newPassword, 12);
+
+            await UsersModel.updateOne(
+              { _id: userId },
+              {
+                avatar: resultFile.secure_url,
+                userName: newUserName,
+                password: hashedPassword,
+              }
+            );
+
+            return res.status(200).json({
+              avatar: resultFile.secure_url,
+              message: "Данные обновлены",
+              userInfo: {
+                userName: newUserName,
+              },
+            });
+          }
+
+          await UsersModel.updateOne(
+            { _id: userId },
+            {
+              avatar: resultFile.secure_url,
+              userName: newUserName,
+              password: currentUser.password,
+            }
+          );
+
+          return res.status(200).json({
+            message: "Данные обновлены",
+            userInfo: {
+              avatar: resultFile.secure_url,
+              userName: newUserName,
+            },
+          });
+        }
+
+        await UsersModel.updateOne(
+          { _id: userId },
+          {
+            avatar: resultFile.secure_url,
+            userName: newUserName,
+            password: currentUser.password,
+          }
+        );
+
+        return res.status(200).json({
+          message: "Данные обновлены",
+          userInfo: {
+            avatar: resultFile.secure_url,
+            userName: newUserName,
+          },
+        });
+      }
+
+      const candidate = await UsersModel.findOne({ userName: newUserName });
+
+      if (candidate) {
+        return res
+          .status(500)
+          .json({ message: "Пользователь с таким именем уже существует" });
+      }
+
+      const currentUser = await UsersModel.findOne({ _id: userId });
+
+      if (oldPassword) {
+        const oldHashedPassword = await bcrypt.compare(
+          oldPassword,
+          currentUser.password
+        );
+
+        if (oldHashedPassword && newPassword) {
+          const hashedPassword = await bcrypt.hash(newPassword, 12);
+
+          await UsersModel.updateOne(
+            { _id: userId },
+            {
+              userName: newUserName,
+              password: hashedPassword,
+            }
+          );
+
+          return res.status(200).json({
+            message: "Данные обновлены",
+            userInfo: {
+              userName: newUserName,
+            },
+          });
+        }
+
+        await UsersModel.updateOne(
+          { _id: userId },
+          {
+            userName: newUserName,
+            password: currentUser.password,
+          }
+        );
+
+        return res.status(200).json({
+          message: "Данные обновлены",
+          userInfo: {
+            userName: newUserName,
+          },
+        });
+      }
+
+      await UsersModel.updateOne(
+        { _id: userId },
+        {
+          userName: newUserName,
+        }
+      );
+
+      return res.status(200).json({
+        message: "Данные обновлены",
+        userInfo: {
+          userName: newUserName,
+        },
+      });
     } catch (err) {
       return res.status(500).json({ message: "Ошибка сервера" });
     }

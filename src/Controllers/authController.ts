@@ -2,7 +2,6 @@ import bcrypt from "bcrypt";
 import { Request, Response } from "express";
 import socket from "socket.io";
 import jwt from "jsonwebtoken";
-import config from "config";
 import UserModel from "../models/UserModel";
 
 interface IData {
@@ -22,15 +21,15 @@ class AuthController {
       const { userName, password }: IData = req.body;
 
       const candidate = await UserModel.findOne({ userName });
-      
+
       if (candidate) {
         return res
           .status(500)
           .json({ message: "Пользователь с таким именем существует" });
       }
 
-      if(!password) {
-        return res.status(500).json({message: "Введите пароль"});
+      if (!password) {
+        return res.status(500).json({ message: "Введите пароль" });
       }
 
       const hashedPassword = await bcrypt.hash(password, 12);
@@ -45,9 +44,13 @@ class AuthController {
 
       await user.save();
 
-      const token = jwt.sign({ userId: user._id }, config.get("secretKey"), {
-        expiresIn: "1d",
-      });
+      const token = jwt.sign(
+        { userId: user._id },
+        process.env.SECRET_KEY as string,
+        {
+          expiresIn: "1d",
+        }
+      );
 
       return res.status(201).json({
         message: "Пользователь создан успешно",
@@ -58,7 +61,7 @@ class AuthController {
         },
       });
     } catch (err) {
-      return res.status(500).json({ message: "Ошибка сервера", err});
+      return res.status(500).json({ message: "Ошибка сервера", err });
     }
   };
 
@@ -78,9 +81,13 @@ class AuthController {
         return res.status(400).json({ message: "Неверный пароль" });
       }
 
-      const token = jwt.sign({ userId: user._id }, config.get("secretKey"), {
-        expiresIn: "1d",
-      });
+      const token = jwt.sign(
+        { userId: user._id },
+        process.env.SECRET_KEY as string,
+        {
+          expiresIn: "1d",
+        }
+      );
 
       await user.updateOne({ $set: { isOnline: true } });
 
@@ -90,7 +97,7 @@ class AuthController {
           userId: user._id,
           token,
           userName,
-        }
+        },
       });
     } catch (err) {
       return res.status(500).json({ message: "Ошибка сервера" });

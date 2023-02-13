@@ -21,8 +21,15 @@ class DialogController {
 
   newDialog = async (req: Request, res: Response) => {
     try {
-      const { creator, fellow, creatorAvatar, fellowAvatar, creatorName, fellowName, lastMessage }: IDialog =
-        req.body;
+      const {
+        creator,
+        fellow,
+        creatorAvatar,
+        fellowAvatar,
+        creatorName,
+        fellowName,
+        lastMessage,
+      }: IDialog = req.body;
 
       const candidate = await DialogModel.findOne({
         $or: [{ creator }, { creator: fellow }],
@@ -62,8 +69,8 @@ class DialogController {
         $or: [{ creator: req.userId }, { fellow: req.userId }],
       });
 
-      if(dialogs.length === 0) {
-        return res.status(404).json({message: "У Вас нет переписок"});
+      if (dialogs.length === 0) {
+        return res.status(404).json({ message: "У Вас нет переписок" });
       }
 
       return res.json({ message: "Мы нашли ваши диалоги", dialogs });

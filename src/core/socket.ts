@@ -1,4 +1,4 @@
-import {Server, Socket} from "socket.io";
+import { Server, Socket } from "socket.io";
 import http from "http";
 
 export default (http: http.Server) => {
@@ -12,4 +12,4 @@ export default (http: http.Server) => {
   });
 
   return io;
-}
+};
