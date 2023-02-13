@@ -210,6 +210,24 @@ class UsersController {
       return res.status(500).json({ message: "Ошибка сервера" });
     }
   };
+
+  getMyData = async (req: Request, res: Response) => {
+    try {
+      const user = await UsersModel.findOne({ _id: req.userId });
+
+      return res.json({
+        avatar: user.avatar,
+        userId: user._id,
+        userName: user.userName,
+        isOnline: user.isOnline,
+        wasOnline: user.wasOnline,
+      });
+    } catch (err) {
+      return res
+        .status(500)
+        .json({ message: "Не получилось получить данные Вашего профиля" });
+    }
+  };
 }
 
 export default UsersController;

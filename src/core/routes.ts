@@ -40,6 +40,8 @@ const createRoutes = (app: Express, io: socket.Server) => {
   );
 
   app.post("/api/users/update-data", multerUploads.single("avatar"), UsersController.updateDataUser);
+
+  app.get("/api/users/get-my-data", checkAuth, UsersController.getMyData);
 };
 
 export default createRoutes;
