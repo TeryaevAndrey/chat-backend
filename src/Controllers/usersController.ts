@@ -54,48 +54,6 @@ class UsersController {
     try {
       const { newUserName, oldPassword, newPassword } = req.body;
 
-      if(req.file && newUserName && oldPassword && newPassword) {
-        const user = await UsersModel.findOne({_id: req.userId});
-
-        const isMatch = await bcrypt.compare(oldPassword, user.password);
-
-        if (!isMatch) {
-          return res.status(400).json({ message: "Неверный старый пароль" });
-        }
-
-        const hashedPassword = await bcrypt.hash(newPassword, 12);
-
-        const users = await UsersModel.find({userName: newUserName});
-
-        if(users) {
-          return res.status(500).json({message: "Такое имя уже зарегистрировано"})
-        }
-
-        const file = dataUri(req).content;
-
-        return uploader
-          .upload(file)
-          .then(async (result: any) => {
-            const image = result.url;
-
-            await UsersModel.updateOne(
-              { _id: req.userId },
-              {
-                avatar: image,
-                userName: newUserName, 
-                password: hashedPassword
-              }
-            );
-
-            return res.status(200).json({
-              message: "Ваше изображение успешно загружено в облачный сервис",
-              data: {
-                image,
-              },
-            });
-          })
-      }
-
       if (req.file && !newUserName && !oldPassword && !newPassword) {
         const file = dataUri(req).content;
 
@@ -124,6 +82,46 @@ class UsersController {
             })
           );
       }
+
+      const user = await UsersModel.findOne({ _id: req.userId });
+
+      const isMatch = await bcrypt.compare(oldPassword, user.password);
+
+      if (!isMatch) {
+        return res.status(400).json({ message: "Неверный старый пароль" });
+      }
+
+      const hashedPassword = await bcrypt.hash(newPassword, 12);
+
+      const users = await UsersModel.find({ userName: newUserName });
+
+      if (users) {
+        return res
+          .status(500)
+          .json({ message: "Такое имя уже зарегистрировано" });
+      }
+
+      const file = dataUri(req).content;
+
+      return uploader.upload(file).then(async (result: any) => {
+        const image = result.url;
+
+        await UsersModel.updateOne(
+          { _id: req.userId },
+          {
+            avatar: image,
+            userName: newUserName,
+            password: hashedPassword ? hashedPassword : user.password,
+          }
+        );
+
+        return res.status(200).json({
+          message: "Ваши данные обновлены",
+          data: {
+            image,
+          },
+        });
+      });
     } catch (err) {
       return res.status(500).json({ message: "Ошибка сервера" });
     }
