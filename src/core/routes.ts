@@ -14,7 +14,7 @@ const createRoutes = (app: Express, io: socket.Server) => {
   const DialogsController = new DialogsCtrl(io);
   const MessagesController = new MessagesCtrl(io);
 
-  app.use(urlencoded({extended: false}));
+  app.use(urlencoded({ extended: false }));
   app.use(express.json());
   app.use(cors());
 
@@ -39,9 +39,14 @@ const createRoutes = (app: Express, io: socket.Server) => {
     MessagesController.getMessages
   );
 
-  app.post("/api/users/update-data", multerUploads.single("avatar"), UsersController.updateDataUser);
+  app.post(
+    "/api/users/update-data",
+    multerUploads.single("avatar"),
+    UsersController.updateDataUser
+  );
 
   app.get("/api/users/get-my-data", checkAuth, UsersController.getMyData);
+  app.get("/api/auth/exit", checkAuth, AuthController.exit);
 };
 
 export default createRoutes;

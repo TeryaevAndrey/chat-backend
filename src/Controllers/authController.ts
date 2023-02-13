@@ -103,6 +103,16 @@ class AuthController {
       return res.status(500).json({ message: "Ошибка сервера" });
     }
   };
+
+  exit = async (req: Request, res: Response) => {
+    try {
+      await UserModel.findOneAndUpdate({_id: req.userId}, {isOnline: false});
+
+      return res.json({message: "Вы вышли из аккаунта"});
+    } catch(err) {
+      return res.status(500).json({message: "Ошибка сервера. Попробуйте ещё раз"});
+    }
+  }
 }
 
 export default AuthController;

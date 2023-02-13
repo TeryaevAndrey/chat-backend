@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import socket from "socket.io";
-import UsersModel from "../models/UserModel";
+import UserModel from "../models/UserModel";
 import { cloudinary } from "../utils/cloudinary";
 import bcrypt from "bcrypt";
 
@@ -15,7 +15,7 @@ class UsersController {
     try {
       const { userName }: { userName: string } = req.body;
 
-      const users = await UsersModel.find({
+      const users = await UserModel.find({
         userName: { $regex: userName, $options: "i" },
       });
 
@@ -36,11 +36,11 @@ class UsersController {
       const limit: number = Number(req.query.limit);
       const page: number = Number(req.query.page);
 
-      const users = await UsersModel.find()
+      const users = await UserModel.find()
         .limit(limit)
         .skip(limit * page);
 
-      const total = await UsersModel.countDocuments();
+      const total = await UserModel.countDocuments();
 
       return res.json({ message: "Все пользователи", users, total });
     } catch (err) {
@@ -69,7 +69,7 @@ class UsersController {
           folder: "avatars",
         });
 
-        const candidate = await UsersModel.findOne({ userName: newUserName });
+        const candidate = await UserModel.findOne({ userName: newUserName });
 
         if (candidate) {
           return res
@@ -77,7 +77,7 @@ class UsersController {
             .json({ message: "Пользователь с таким именем уже существует" });
         }
 
-        const currentUser = await UsersModel.findOne({ _id: userId });
+        const currentUser = await UserModel.findOne({ _id: userId });
 
         if (oldPassword) {
           const oldHashedPassword = await bcrypt.compare(
@@ -88,7 +88,7 @@ class UsersController {
           if (oldHashedPassword && newPassword) {
             const hashedPassword = await bcrypt.hash(newPassword, 12);
 
-            await UsersModel.updateOne(
+            await UserModel.updateOne(
               { _id: userId },
               {
                 avatar: resultFile.secure_url,
@@ -106,7 +106,7 @@ class UsersController {
             });
           }
 
-          await UsersModel.updateOne(
+          await UserModel.updateOne(
             { _id: userId },
             {
               avatar: resultFile.secure_url,
@@ -124,7 +124,7 @@ class UsersController {
           });
         }
 
-        await UsersModel.updateOne(
+        await UserModel.updateOne(
           { _id: userId },
           {
             avatar: resultFile.secure_url,
@@ -142,7 +142,7 @@ class UsersController {
         });
       }
 
-      const candidate = await UsersModel.findOne({ userName: newUserName });
+      const candidate = await UserModel.findOne({ userName: newUserName });
 
       if (candidate) {
         return res
@@ -150,7 +150,7 @@ class UsersController {
           .json({ message: "Пользователь с таким именем уже существует" });
       }
 
-      const currentUser = await UsersModel.findOne({ _id: userId });
+      const currentUser = await UserModel.findOne({ _id: userId });
 
       if (oldPassword) {
         const oldHashedPassword = await bcrypt.compare(
@@ -161,7 +161,7 @@ class UsersController {
         if (oldHashedPassword && newPassword) {
           const hashedPassword = await bcrypt.hash(newPassword, 12);
 
-          await UsersModel.updateOne(
+          await UserModel.updateOne(
             { _id: userId },
             {
               userName: newUserName,
@@ -177,7 +177,7 @@ class UsersController {
           });
         }
 
-        await UsersModel.updateOne(
+        await UserModel.updateOne(
           { _id: userId },
           {
             userName: newUserName,
@@ -193,7 +193,7 @@ class UsersController {
         });
       }
 
-      await UsersModel.updateOne(
+      await UserModel.updateOne(
         { _id: userId },
         {
           userName: newUserName,
@@ -213,7 +213,7 @@ class UsersController {
 
   getMyData = async (req: Request, res: Response) => {
     try {
-      const user = await UsersModel.findOne({ _id: req.userId });
+      const user = await UserModel.findOne({ _id: req.userId });
 
       return res.json({
         avatar: user.avatar,
