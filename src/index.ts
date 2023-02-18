@@ -18,7 +18,7 @@ const startServer = async () => {
   try {
     await mongoose.connect(process.env.MONGO_URL!);
 
-    app.listen(process.env.PORT, () => {
+    http.listen(process.env.PORT, () => {
       console.log("server started");
     });
   } catch (err) {

@@ -29,11 +29,11 @@ class MessagesController {
 
       await newMessage.save();
 
-      this.io.emit("SERVER:NEW-MESSAGE", newMessage);
+      this.io.to(dialog).emit("SERVER:NEW-MESSAGE", newMessage);
 
       return res.json({ message: "Сообщение отправлено" });
     } catch (err) {
-      return res.status(500).json({ message: "Ошибка сервера" });
+      return res.status(500).json({ message: "Ошибка сервера", err });
     }
   };
 
