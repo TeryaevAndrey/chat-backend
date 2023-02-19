@@ -9,13 +9,13 @@ interface IDialog {
   fellowAvatar: string;
   creatorName: string;
   fellowName: string;
-  lastMessage: string;
+  lastMessage: string | undefined;
 }
 
 class DialogController {
-  io?: socket.Server;
+  io: socket.Server;
 
-  constructor(io?: socket.Server) {
+  constructor(io: socket.Server) {
     this.io = io;
   }
 
@@ -78,6 +78,24 @@ class DialogController {
       return res.status(500).json({ message: "Ошибка сервера" });
     }
   };
+
+  getDialogInfo = async(req: Request, res: Response) => {
+    try {
+      const {dialogId}: {
+        dialogId: string;
+      } = req.body;
+
+      const dialog = await DialogModel.findOne({_id: dialogId});
+
+      if(!dialog) {
+        return res.status(400).json({message: "Нам не удалось найти диалог"});
+      }
+
+      return res.json({message: "Мы нашли этот диалог", dialog});
+    } catch(err) {
+      return res.status(500).json({message: "Ошибка сервера"});
+    }
+  }
 }
 
 export default DialogController;

@@ -47,6 +47,10 @@ const createRoutes = (app: Express, io: socket.Server) => {
 
   app.get("/api/users/get-my-data", checkAuth, UsersController.getMyData);
   app.get("/api/auth/exit", checkAuth, AuthController.exit);
+
+  app.post("/api/dialogs/get-dialog-info", checkAuth, DialogsController.getDialogInfo);
+
+  app.post("/api/users/get-user", checkAuth, UsersController.getUser);
 };
 
 export default createRoutes;
