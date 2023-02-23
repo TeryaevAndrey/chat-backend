@@ -12,6 +12,23 @@ const app = express();
 const http = createServer(app);
 const io = createSocket(http);
 
+io.on("connection", (socket) => {
+  console.log(socket.id + " Подключился");
+
+  socket.on("ROOM:JOIN", (dialogId) => {
+    socket.join(dialogId);
+    console.log("Пользователь подключился к " + dialogId);
+  });
+
+  socket.on("ROOM:NEW-MESSAGE", (message) => {
+    socket.to(message.dialog).emit("ROOM:NEW-MESSAGE", message);
+  });
+
+  socket.on("disconnect", () => {
+    console.log(socket.id + " Отключился");
+  })
+});
+
 createRoutes(app, io);
 
 const startServer = async () => {
