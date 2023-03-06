@@ -20,6 +20,7 @@ const createRoutes = (app: Express, io: socket.Server) => {
 
   app.post("/api/auth/reg", AuthController.reg);
   app.post("/api/auth/entrance", AuthController.entrance);
+  app.post("/api/auth/check-token", AuthController.checkToken);
   app.post("/api/users/users-search", UsersController.usersSearch);
   app.get("/api/users/get-all-users", UsersController.getAllUsers);
   app.post("/api/dialogs/new-dialog", checkAuth, DialogsController.newDialog);
