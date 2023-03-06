@@ -29,7 +29,7 @@ class MessagesController {
 
       await newMessage.save();
 
-      return res.json({ message: "Сообщение отправлено" });
+      return res.json({ message: "Сообщение отправлено", newMessage });
     } catch (err) {
       return res.status(500).json({ message: "Ошибка сервера", err });
     }
