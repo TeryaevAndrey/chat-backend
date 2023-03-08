@@ -113,16 +113,6 @@ class AuthController {
       return res.status(500).json({message: "Ошибка сервера. Попробуйте ещё раз"});
     }
   }
-
-  checkToken = async(req: Request, res: Response) => {
-    const {token}: {token: string} = req.body;
-
-    jwt.verify(token, process.env.SECRET_KEY!, (err: any) => {
-      if(err) {
-        return res.status(500).json({message: "Время жизни токена истекло", err});
-      }
-    });
-  }
 }
 
 export default AuthController;
