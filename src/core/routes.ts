@@ -38,18 +38,18 @@ const createRoutes = (app: Express, io: socket.Server) => {
     checkAuth,
     MessagesController.getMessages
   );
-
   app.post(
     "/api/users/update-data",
     multerUploads.single("avatar"),
     UsersController.updateDataUser
   );
-
   app.get("/api/users/get-my-data", checkAuth, UsersController.getMyData);
   app.get("/api/auth/exit", checkAuth, AuthController.exit);
-
-  app.post("/api/dialogs/get-dialog-info", checkAuth, DialogsController.getDialogInfo);
-
+  app.post(
+    "/api/dialogs/get-dialog-info",
+    checkAuth,
+    DialogsController.getDialogInfo
+  );
   app.post("/api/users/get-user", checkAuth, UsersController.getUser);
 };
 
