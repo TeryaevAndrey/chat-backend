@@ -1,10 +1,10 @@
 import express, { Express, urlencoded } from "express";
 import cors from "cors";
 import socket from "socket.io";
-import AuthCtrl from "../controllers/AuthController";
-import UsersCtrl from "../controllers/UsersController";
-import DialogsCtrl from "../controllers/DialogsController";
-import MessagesCtrl from "../controllers/MessagesController";
+import AuthCtrl from "../Controllers/AuthController";
+import UsersCtrl from "../Controllers/UsersController";
+import DialogsCtrl from "../Controllers/DialogsController";
+import MessagesCtrl from "../Controllers/MessagesController";
 import checkAuth from "../utils/checkAuth";
 import { multerUploads } from "../utils/multer";
 
@@ -38,18 +38,18 @@ const createRoutes = (app: Express, io: socket.Server) => {
     checkAuth,
     MessagesController.getMessages
   );
-
   app.post(
     "/api/users/update-data",
     multerUploads.single("avatar"),
     UsersController.updateDataUser
   );
-
   app.get("/api/users/get-my-data", checkAuth, UsersController.getMyData);
   app.get("/api/auth/exit", checkAuth, AuthController.exit);
-
-  app.post("/api/dialogs/get-dialog-info", checkAuth, DialogsController.getDialogInfo);
-
+  app.post(
+    "/api/dialogs/get-dialog-info",
+    checkAuth,
+    DialogsController.getDialogInfo
+  );
   app.post("/api/users/get-user", checkAuth, UsersController.getUser);
 };
 
