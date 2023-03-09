@@ -24,10 +24,6 @@ class DialogController {
       const {
         creator,
         fellow,
-        creatorAvatar,
-        fellowAvatar,
-        creatorName,
-        fellowName,
         lastMessage,
       }: IDialog = req.body;
 
@@ -45,10 +41,6 @@ class DialogController {
       const dialog = new DialogModel({
         creator,
         fellow,
-        creatorAvatar,
-        fellowAvatar,
-        creatorName,
-        fellowName,
         lastMessage,
       });
 
