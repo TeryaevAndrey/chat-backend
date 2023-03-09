@@ -32,7 +32,7 @@ class DialogController {
       }: IDialog = req.body;
 
       const candidate = await DialogModel.findOne({
-        $or: [{ creator }, { creator: fellow }],
+        $or: [{ creator, fellow }, { creator: fellow, fellow: creator }],
       });
 
       if (candidate) {
