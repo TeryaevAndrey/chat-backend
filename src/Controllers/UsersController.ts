@@ -229,23 +229,25 @@ class UsersController {
     }
   };
 
-  getUser = async(req: Request, res: Response) => {
+  getUser = async (req: Request, res: Response) => {
     try {
-      const {userId}: {
+      const {
+        userId,
+      }: {
         userId: string;
       } = req.body;
 
-      const user = await UserModel.findOne({_id: userId});
+      const user = await UserModel.findOne({ _id: userId });
 
-      if(!user) {
-        return res.status(400).json({message: "Пользователь не найден"});
+      if (!user) {
+        return res.status(400).json({ message: "Пользователь не найден" });
       }
 
-      return res.json({message: "Мы нашли данного пользователя", user});
-    } catch(err) {
-      return res.status(500).json({message: "Ошибка сервера"});
+      return res.json({ message: "Мы нашли данного пользователя", user });
+    } catch (err) {
+      return res.status(500).json({ message: "Ошибка сервера" });
     }
-  }
+  };
 }
 
 export default UsersController;

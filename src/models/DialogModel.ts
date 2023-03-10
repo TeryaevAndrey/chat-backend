@@ -1,23 +1,15 @@
 import { model, Schema } from "mongoose";
 
 interface IDialogSchema {
-  creator: string;
-  fellow: string;
-  creatorAvatar: string;
-  fellowAvatar: string;
-  creatorName: string;
-  fellowName: string;
+  creator: Schema.Types.ObjectId;
+  fellow: Schema.Types.ObjectId;
   lastMessage: string;
 }
 
 const DialogSchema = new Schema<IDialogSchema>(
   {
-    creator: { type: String, required: true },
-    fellow: { type: String, required: true },
-    creatorAvatar: { type: String, required: true },
-    fellowAvatar: { type: String, required: true },
-    creatorName: { type: String, required: true },
-    fellowName: { type: String, required: true },
+    creator: { type: String, required: true, ref: "User" },
+    fellow: { type: String, required: true, ref: "User" },
     lastMessage: { type: String },
   },
   { timestamps: true }

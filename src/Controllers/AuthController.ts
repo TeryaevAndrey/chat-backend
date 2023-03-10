@@ -35,7 +35,7 @@ class AuthController {
       const hashedPassword = await bcrypt.hash(password, 12);
 
       const user = new UserModel({
-        avatar: "",
+        avatar: "/img/avatar.png",
         userName: userName,
         password: hashedPassword,
         isOnline: true,
@@ -106,13 +106,18 @@ class AuthController {
 
   exit = async (req: Request, res: Response) => {
     try {
-      await UserModel.findOneAndUpdate({_id: req.userId}, {isOnline: false});
+      await UserModel.findOneAndUpdate(
+        { _id: req.userId },
+        { isOnline: false }
+      );
 
-      return res.json({message: "Вы вышли из аккаунта"});
-    } catch(err) {
-      return res.status(500).json({message: "Ошибка сервера. Попробуйте ещё раз"});
+      return res.json({ message: "Вы вышли из аккаунта" });
+    } catch (err) {
+      return res
+        .status(500)
+        .json({ message: "Ошибка сервера. Попробуйте ещё раз" });
     }
-  }
+  };
 }
 
 export default AuthController;

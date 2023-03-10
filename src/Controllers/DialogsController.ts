@@ -5,10 +5,6 @@ import DialogModel from "../models/DialogModel";
 interface IDialog {
   creator: string;
   fellow: string;
-  creatorAvatar: string;
-  fellowAvatar: string;
-  creatorName: string;
-  fellowName: string;
   lastMessage: string | undefined;
 }
 
@@ -21,18 +17,13 @@ class DialogController {
 
   newDialog = async (req: Request, res: Response) => {
     try {
-      const {
-        creator,
-        fellow,
-        creatorAvatar,
-        fellowAvatar,
-        creatorName,
-        fellowName,
-        lastMessage,
-      }: IDialog = req.body;
+      const { creator, fellow, lastMessage }: IDialog = req.body;
 
       const candidate = await DialogModel.findOne({
-        $or: [{ creator, fellow }, { creator: fellow, fellow: creator }],
+        $or: [
+          { creator, fellow },
+          { creator: fellow, fellow: creator },
+        ],
       });
 
       if (candidate) {
@@ -45,10 +36,6 @@ class DialogController {
       const dialog = new DialogModel({
         creator,
         fellow,
-        creatorAvatar,
-        fellowAvatar,
-        creatorName,
-        fellowName,
         lastMessage,
       });
 
@@ -59,7 +46,7 @@ class DialogController {
         dialogId: dialog._id,
       });
     } catch (err) {
-      return res.status(500).json({ message: "Ошибка сервера" });
+      return res.status(500).json({ message: "Ошибка сервера", err });
     }
   };
 
@@ -67,7 +54,7 @@ class DialogController {
     try {
       const dialogs = await DialogModel.find({
         $or: [{ creator: req.userId }, { fellow: req.userId }],
-      });
+      }).populate(["creator", "fellow"]);
 
       if (dialogs.length === 0) {
         return res.status(404).json({ message: "У Вас нет переписок" });
@@ -79,23 +66,25 @@ class DialogController {
     }
   };
 
-  getDialogInfo = async(req: Request, res: Response) => {
+  getDialogInfo = async (req: Request, res: Response) => {
     try {
-      const {dialogId}: {
+      const {
+        dialogId,
+      }: {
         dialogId: string;
       } = req.body;
 
-      const dialog = await DialogModel.findOne({_id: dialogId});
+      const dialog = await DialogModel.findOne({ _id: dialogId });
 
-      if(!dialog) {
-        return res.status(400).json({message: "Нам не удалось найти диалог"});
+      if (!dialog) {
+        return res.status(400).json({ message: "Нам не удалось найти диалог" });
       }
 
-      return res.json({message: "Мы нашли этот диалог", dialog});
-    } catch(err) {
-      return res.status(500).json({message: "Ошибка сервера"});
+      return res.json({ message: "Мы нашли этот диалог", dialog });
+    } catch (err) {
+      return res.status(500).json({ message: "Ошибка сервера" });
     }
-  }
+  };
 }
 
 export default DialogController;
