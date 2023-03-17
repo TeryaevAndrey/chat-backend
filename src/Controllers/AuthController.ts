@@ -104,6 +104,34 @@ class AuthController {
     }
   };
 
+  makeOnline = async (req: Request, res: Response) => {
+    try {
+      const {
+        userId,
+      }: {
+        userId: string;
+      } = req.body;
+
+      await UserModel.findOneAndUpdate({ _id: userId }, { isOnline: true });
+
+      return res.json({ message: "Пользователь в сети!" });
+    } catch (err) {
+      return res.status(500).json({ message: "Ошибка сервера" });
+    }
+  };
+
+  makeOffline = async (req: Request, res: Response) => {
+    try {
+      const { userId }: { userId: string } = req.body;
+
+      await UserModel.findOneAndUpdate({ _id: userId }, { isOnline: false });
+
+      return res.json({ message: "Пользователь вышел из сети" });
+    } catch (err) {
+      return res.status(500).json({ message: "Ошибка сервера" });
+    }
+  };
+
   exit = async (req: Request, res: Response) => {
     try {
       await UserModel.findOneAndUpdate(
