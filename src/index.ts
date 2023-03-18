@@ -6,11 +6,14 @@ import mongoose from "mongoose";
 import createRoutes from "./core/routes";
 import createSocket from "./core/socket";
 import { createServer } from "http";
+import socketAuth from "./middleware/socketAuth";
 
 const app = express();
 
 const http = createServer(app);
 const io = createSocket(http);
+
+io.use(socketAuth);
 
 io.on("connection", (socket) => {
   console.log(socket.id + " Подключился");
@@ -18,6 +21,11 @@ io.on("connection", (socket) => {
   socket.on("ROOM:JOIN", (dialogId) => {
     socket.join(dialogId);
     console.log("Пользователь подключился к " + dialogId);
+  });
+
+  socket.on("ROOM:LEAVE", (dialogId) => {
+    socket.leave(dialogId);
+    console.log("Отключился с " + dialogId)
   });
 
   socket.on("ROOM:NEW-MESSAGE", (message) => {
