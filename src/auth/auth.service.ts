@@ -31,7 +31,7 @@ export class AuthService {
 
     const userDTO = new UserResponseDto(newUser);
 
-    return { message: 'Registration was successful', user: userDTO };
+    return userDTO;
   }
 
   async signIn(login: string, password: string) {
@@ -55,7 +55,6 @@ export class AuthService {
     const refresh_token = this.jwtService.sign(payload, { expiresIn: '7d' });
 
     return {
-      message: 'You have successfully logged in',
       access_token,
       refresh_token,
       user: userDTO,
